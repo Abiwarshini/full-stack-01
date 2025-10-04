@@ -5,7 +5,7 @@ export default function Features() {
   return (
     <section id="features" className="features">
       <div className="container">
-        <h2 className="section-title">✨ Posh Features for Modern Events</h2>
+        <h2 className="section-title">Posh Features for Modern Events</h2>
         <p className="section-sub">
           Luxury design meets smart technology — elegant event pages, seamless ticketing, and effortless venue booking.
         </p>

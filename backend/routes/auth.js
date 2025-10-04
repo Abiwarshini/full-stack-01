@@ -56,11 +56,11 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    // Send token + user details (Option B)
+    // Send token + user details
     res.json({
       token,
       user: {
-        id: user._id,
+        id: user._id.toString(), // Ensure ID is a string
         name: user.name,
         email: user.email,
         userType: user.userType,

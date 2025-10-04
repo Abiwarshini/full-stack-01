@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Home, Mail, Calendar, PlusCircle, LogIn, Ticket } from "lucide-react";
 import ProfileMenu from './ProfileMenu';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
-  const isLoggedIn = location.pathname !== '/login' && location.pathname !== '/signup';
+  const navigate = useNavigate();
+  const isLoggedIn = localStorage.getItem('token') !== null;
 
   return (
     <header className="navbar-header">
@@ -25,17 +26,21 @@ export default function Navbar() {
         {/* Nav links */}
         <ul className={`nav-links ${isOpen ? "open" : ""}`}>
           <li>
-            <a href="/"><Home size={18}/> Home</a>
+            <Link to="/"><Home size={18}/> Home</Link>
           </li>
           <li>
-            <a href="/contact"><Mail size={18}/> Contact</a>
+            <Link to="/contact"><Mail size={18}/> Contact</Link>
           </li>
           <li>
-            <a href="/events"><Calendar size={18}/> Events</a>
+            <Link to="/events"><Calendar size={18}/> Events</Link>
           </li>
-          <li>
-            <a href="/create-event"><PlusCircle size={18}/> Create Event</a>
-          </li>
+          {isLoggedIn && (
+            <li>
+              <Link to="/create-event">
+                <PlusCircle size={18}/> Create Event
+              </Link>
+            </li>
+          )}
         </ul>
 
         {/* Login button or Profile Menu */}
@@ -43,7 +48,7 @@ export default function Navbar() {
           {isLoggedIn ? (
             <ProfileMenu />
           ) : (
-            <a href="/login" className="btn btn-primary"><LogIn size={18}/> Login</a>
+            <Link to="/login" className="btn btn-primary"><LogIn size={18}/> Login</Link>
           )}
         </div>
       </nav>

@@ -18,7 +18,8 @@ const eventSchema = new mongoose.Schema({
     }
   },
   image: { type: String }, // we’ll store filename here
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" } // who created event
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // who created event
+  registeredUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] // users attending
 }, { timestamps: true });
 
 module.exports = mongoose.model("Event", eventSchema);

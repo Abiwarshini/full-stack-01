@@ -3,8 +3,8 @@ import { Calendar, Clock, MapPin, Image, Tag, FileText, Users } from 'lucide-rea
 import './styles/CreateEvent.css';
 
 const CreateEvent = () => {
-  // 🔹 Get logged-in userId from localStorage (set it when user logs in)
-  const loggedInUserId = localStorage.getItem("userId"); // must be stored during login
+  // 🔹 Get logged-in userId from localStorage
+  const loggedInUserId = localStorage.getItem("userId");
 
   const [eventData, setEventData] = useState({
     eventName: '',
@@ -13,15 +13,12 @@ const CreateEvent = () => {
     location: '',
     description: '',
     category: '',
-    tickets: {
-      vip: { price: '', capacity: '' },
-      normal: { price: '', capacity: '' }
-    },
+    tickets: { vip: { price: '', capacity: '' }, normal: { price: '', capacity: '' } },
     eventImage: null,
     imagePreview: null
   });
 
-  // 🔹 Input handler for text, date, numbers
+  // 🔹 Handle text/number input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name.includes('tickets.')) {
@@ -30,21 +27,15 @@ const CreateEvent = () => {
         ...prev,
         tickets: {
           ...prev.tickets,
-          [ticketType]: {
-            ...prev.tickets[ticketType],
-            [field]: value
-          }
+          [ticketType]: { ...prev.tickets[ticketType], [field]: value }
         }
       }));
     } else {
-      setEventData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+      setEventData(prev => ({ ...prev, [name]: value }));
     }
   };
 
-  // 🔹 File input handler (image preview)
+  // 🔹 Handle file input and preview
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -56,7 +47,7 @@ const CreateEvent = () => {
     }
   };
 
-  // 🔹 Submit handler (sending data to backend)
+  // 🔹 Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -76,24 +67,19 @@ const CreateEvent = () => {
     formData.append("vip_capacity", eventData.tickets.vip.capacity);
     formData.append("normal_price", eventData.tickets.normal.price);
     formData.append("normal_capacity", eventData.tickets.normal.capacity);
-    if (eventData.eventImage) {
-      formData.append("eventImage", eventData.eventImage);
-    }
-
-    // ✅ Send userId to backend
     formData.append("userId", loggedInUserId);
+    if (eventData.eventImage) formData.append("eventImage", eventData.eventImage);
 
     try {
       const res = await fetch("http://localhost:5000/api/events", {
         method: "POST",
         body: formData
       });
-
       const data = await res.json();
       if (res.ok) {
         alert("🎉 Event created successfully!");
         console.log("✅ Event saved:", data.event);
-        setEventData({  // reset form
+        setEventData({  // Reset form
           eventName: '',
           date: '',
           time: '',
@@ -117,13 +103,13 @@ const CreateEvent = () => {
     <div className="create-event-container">
       <h1>Create New Event</h1>
       <div className="create-event-layout">
+        {/* 🔹 Form Section */}
         <div className="form-container">
           <form onSubmit={handleSubmit} className="create-event-form">
+
             {/* Event Name */}
             <div className="form-group">
-              <label>
-                <FileText size={20} /> Event Name
-              </label>
+              <label><FileText size={20} /> Event Name</label>
               <input
                 type="text"
                 name="eventName"
@@ -134,7 +120,7 @@ const CreateEvent = () => {
               />
             </div>
 
-            {/* Date + Time */}
+            {/* Date & Time */}
             <div className="form-row">
               <div className="form-group">
                 <label><Calendar size={20} /> Date</label>
@@ -146,7 +132,6 @@ const CreateEvent = () => {
                   required
                 />
               </div>
-
               <div className="form-group">
                 <label><Clock size={20} /> Time</label>
                 <input
@@ -167,7 +152,7 @@ const CreateEvent = () => {
                 name="location"
                 value={eventData.location}
                 onChange={handleInputChange}
-                placeholder="Enter event location"
+                placeholder="Enter location"
                 required
               />
             </div>
@@ -179,20 +164,20 @@ const CreateEvent = () => {
                 name="description"
                 value={eventData.description}
                 onChange={handleInputChange}
-                placeholder="Enter event description"
+                placeholder="Enter description"
                 required
               />
             </div>
 
             {/* Category */}
             <div className="form-group">
-              <label><Tag size={20} /> Event Category</label>
+              <label><Tag size={20} /> Category</label>
               <select
                 name="category"
                 value={eventData.category}
                 onChange={handleInputChange}
-                required
                 className="select-input"
+                required
               >
                 <option value="">Select Category</option>
                 <option value="conference">Conference</option>
@@ -215,12 +200,10 @@ const CreateEvent = () => {
                     name="tickets.vip_price"
                     value={eventData.tickets.vip.price}
                     onChange={handleInputChange}
-                    placeholder="VIP ticket price"
                     min="0"
                     required
                   />
                 </div>
-
                 <div className="form-group">
                   <label><Users size={20} /> VIP Capacity</label>
                   <input
@@ -228,12 +211,10 @@ const CreateEvent = () => {
                     name="tickets.vip_capacity"
                     value={eventData.tickets.vip.capacity}
                     onChange={handleInputChange}
-                    placeholder="VIP seats"
                     min="1"
                     required
                   />
                 </div>
-
                 <div className="form-group">
                   <label><Tag size={20} /> Normal Price</label>
                   <input
@@ -241,12 +222,10 @@ const CreateEvent = () => {
                     name="tickets.normal_price"
                     value={eventData.tickets.normal.price}
                     onChange={handleInputChange}
-                    placeholder="Normal ticket price"
                     min="0"
                     required
                   />
                 </div>
-
                 <div className="form-group">
                   <label><Users size={20} /> Normal Capacity</label>
                   <input
@@ -254,7 +233,6 @@ const CreateEvent = () => {
                     name="tickets.normal_capacity"
                     value={eventData.tickets.normal.capacity}
                     onChange={handleInputChange}
-                    placeholder="Normal seats"
                     min="1"
                     required
                   />
@@ -298,28 +276,22 @@ const CreateEvent = () => {
             )}
             <div className="preview-content">
               <h3>{eventData.eventName || 'Event Name'}</h3>
-              <p className="preview-location">
-                <MapPin size={16} /> {eventData.location || 'Location'}
-              </p>
+              <p className="preview-location"><MapPin size={16} /> {eventData.location || 'Location'}</p>
               <p className="preview-datetime">
-                <Calendar size={16} /> {eventData.date ? new Date(eventData.date).toLocaleDateString() : 'Date'} 
+                <Calendar size={16} /> {eventData.date ? new Date(eventData.date).toLocaleDateString() : 'Date'}
                 <Clock size={16} /> {eventData.time || 'Time'}
               </p>
-              <p className="preview-description">
-                {eventData.description || 'Event description will appear here...'}
-              </p>
-              <div className="preview-details">
-                <div className="preview-tickets">
-                  <div className="ticket-row">
-                    <span className="ticket-label">VIP:</span>
-                    <span className="preview-price"><Tag size={16} /> ${eventData.tickets.vip.price || '0'}</span>
-                    <span className="preview-capacity"><Users size={16} /> {eventData.tickets.vip.capacity || '0'}</span>
-                  </div>
-                  <div className="ticket-row">
-                    <span className="ticket-label">Normal:</span>
-                    <span className="preview-price"><Tag size={16} /> ${eventData.tickets.normal.price || '0'}</span>
-                    <span className="preview-capacity"><Users size={16} /> {eventData.tickets.normal.capacity || '0'}</span>
-                  </div>
+              <p className="preview-description">{eventData.description || 'Event description...'}</p>
+              <div className="preview-tickets">
+                <div className="ticket-row">
+                  <span className="ticket-label">VIP:</span>
+                  <span className="preview-price"><Tag size={16} /> ${eventData.tickets.vip.price || '0'}</span>
+                  <span className="preview-capacity"><Users size={16} /> {eventData.tickets.vip.capacity || '0'}</span>
+                </div>
+                <div className="ticket-row">
+                  <span className="ticket-label">Normal:</span>
+                  <span className="preview-price"><Tag size={16} /> ${eventData.tickets.normal.price || '0'}</span>
+                  <span className="preview-capacity"><Users size={16} /> {eventData.tickets.normal.capacity || '0'}</span>
                 </div>
               </div>
             </div>

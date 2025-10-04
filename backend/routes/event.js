@@ -2,8 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const Event = require("../models/Event");
-const User = require("../models/User"); // import User model
-const sendEmail = require("../email");  // import email function
+const User = require("../models/User");
+const sendEmail = require("../email");
 
 const router = express.Router();
 
@@ -14,10 +14,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Create Event + send email to all users asynchronously
+// Create Event + send email
 router.post("/events", upload.single("eventImage"), async (req, res) => {
   try {
-    // 1️⃣ Create new event
     const newEvent = new Event({
       eventName: req.body.eventName,
       date: req.body.date,
@@ -36,14 +35,13 @@ router.post("/events", upload.single("eventImage"), async (req, res) => {
         },
       },
       image: req.file ? req.file.filename : null,
-      createdBy: req.body.userId || null, // userId from frontend
+      createdBy: req.body.userId || null, // send userId from frontend
     });
 
     await newEvent.save();
-
     res.status(201).json({ message: "Event created successfully!", event: newEvent });
 
-    // 2️⃣ Send email to all users asynchronously (non-blocking)
+    // Send email asynchronously
     const users = await User.find();
     users.forEach(user => {
       sendEmail(
@@ -70,10 +68,7 @@ router.get("/events", async (req, res) => {
   }
 });
 
-// Get single event by ID
-// Get events created by a specific user (for Dashboard)
-// Get events created by a specific user
-// GET events created by a specific user
+// Get events created by a specific user (Dashboard)
 router.get("/events/my-events/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
@@ -85,6 +80,30 @@ router.get("/events/my-events/:userId", async (req, res) => {
   }
 });
 
+// Get events a user is registered for (Dashboard)
+router.get("/events/registered/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const events = await Event.find({ registeredUsers: userId }).sort({ createdAt: -1 });
+    res.json(events);
+  } catch (err) {
+    console.error("Failed to fetch registered events:", err);
+    res.status(500).json({ message: "Failed to fetch registered events" });
+  }
+});
 
+// Delete event
+router.delete("/events/:id", async (req, res) => {
+  try {
+    const event = await Event.findByIdAndDelete(req.params.id);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    res.json({ message: "Event deleted successfully" });
+  } catch (err) {
+    console.error("Delete event failed:", err);
+    res.status(500).json({ message: "Failed to delete event" });
+  }
+});
 
 module.exports = router;

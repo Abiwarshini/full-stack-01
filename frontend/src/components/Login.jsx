@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import up3 from '../assets/up3.png';
+import up3 from '../assets/up3.gif';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -28,12 +28,16 @@ const Login = () => {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Login successful 🎉");
+        // Store token and user data
         localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user)); // store user details
-        window.location.href = "/"; // redirect to home page
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("userId", data.user.id); // Store userId separately
+        console.log("Login successful with user:", data.user); // Debug log
+        alert("Login successful 🎉");
+        window.location.href = "/dashboard"; // redirect to dashboard
       } else {
-        alert(data.message || "Login failed");
+        console.error("Login failed:", data.message); // Debug log
+        alert(data.message || "Login failed ❌");
       }
     } catch (err) {
       console.error(err);

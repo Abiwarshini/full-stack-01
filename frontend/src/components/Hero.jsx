@@ -1,7 +1,18 @@
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Poster from "../assets/images.jpg"; // replace with your own
 
 export default function Hero() {
+  const navigate = useNavigate();
+  const isLoggedIn = localStorage.getItem('token') !== null;
+
+  const handleCreateEvent = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+    } else {
+      navigate('/create-event');
+    }
+  };
   return (
     <section id="home" className="hero">
       <div className="container hero-inner">
@@ -9,7 +20,7 @@ export default function Hero() {
         {/* LEFT CONTENT */}
         <div className="hero-content">
           <h1 className="hero-title">
-            Plan & Host <span className="accent">Elite Events</span> Effortlessly ✨
+            Plan & Host <span className="accent">Elite Events</span> Effortlessly 
           </h1>
           <p className="hero-sub">
             Eventoria brings luxury and simplicity together. Create stylish event
@@ -17,8 +28,8 @@ export default function Hero() {
           </p>
 
           <div className="hero-actions">
-            <a href="#features" className="btn btn-primary btn-lg">Get Started</a>
-            <a href="#create" className="btn btn-outline btn-lg">Create Event</a>
+            <Link to="/events" className="btn btn-primary btn-lg">Get Started</Link>
+            <button onClick={handleCreateEvent} className="btn btn-outline btn-lg">Create Event</button>
           </div>
 
           <div className="stats">

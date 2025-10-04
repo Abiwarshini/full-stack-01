@@ -12,7 +12,9 @@ import Login from './components/Login';
 import CreateEvent from './components/CreateEvent';
 import EventDetails from './components/EventDetails';
 import Events from './components/Events';
-import Dashboard from './components/Dashboard'; // ✅ import Dashboard
+import Dashboard from './components/Dashboard';
+import Contact from './components/Contact';
+import PrivateRoute from './components/PrivateRoute';
 
 // Wrapper to handle conditional Navbar
 const Layout = ({ children }) => {
@@ -46,10 +48,11 @@ function App() {
           } />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/create-event" element={<PrivateRoute><CreateEvent /></PrivateRoute>} />
           <Route path="/events" element={<Events />} />
           <Route path="/event/:id" element={<EventDetails />} />
-          <Route path="/dashboard" element={<Dashboard />} />  {/* ✅ Add Dashboard route */}
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </Layout>
     </Router>
